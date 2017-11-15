@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText et_name;
     private EditText et_status;
     private EditText et_remark;
+    private EditText et_addr;
     private String host="127.0.0.1";//同一个局域网内作为服务端的手机的IP，使用端口8155
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         et_name=(EditText) findViewById(R.id.EName);
         et_status=(EditText) findViewById(R.id.EStatus);
         et_remark=(EditText) findViewById(R.id.EReMark);
+        et_addr = (EditText) findViewById(R.id.et_addr);
 
         Button b_send = (Button) findViewById(R.id.button_send);
 
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
 
                 try {
+                    host = et_addr.getText().toString();
+                    Log.i("kemov", "kemovlog host="+host);
                     Socket socket=new Socket(InetAddress.getByName(host), 8155);
                     OutputStream os=socket.getOutputStream();
                     os.write(result.getBytes());
