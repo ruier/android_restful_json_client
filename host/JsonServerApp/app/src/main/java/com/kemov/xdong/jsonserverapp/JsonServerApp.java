@@ -57,17 +57,15 @@ public class JsonServerApp extends AppCompatActivity {
                             //第一步，生成Json字符串格式的JSON对象
                             JSONObject jsonObject=new JSONObject(os.toString());
                             //第二步，从JSON对象中取值如果JSON 对象较多，可以用json数组
-                            String name="姓名："+jsonObject.getString("name");
-                            String age="年龄："+jsonObject.getString("age");
-                            String sex="性别："+jsonObject.getString("sex");
-                            StringBuffer sb=new StringBuffer();
-                            sb.append(name);
-                            sb.append(age);
-                            sb.append(sex);
+                            String modid="modid："+jsonObject.getString("modid");
+                            String name="name："+jsonObject.getString("name");
+                            String status="status："+jsonObject.getString("status");
+                            String remark="remark："+jsonObject.getString("remark");
+
                             Looper.prepare();
                             Message message=Message.obtain();
                             message.what=0X01;
-                            message.obj=sb.toString();
+                            message.obj= modid + name + status + remark;
                             mHandler.sendMessage(message);
                             Looper.loop();
 
@@ -111,10 +109,7 @@ public class JsonServerApp extends AppCompatActivity {
 
     }
 
-    public void send(View v) throws JSONException, IOException{
-        b_recv.setEnabled(false);
-
-
+    public void recv(View v) throws JSONException, IOException{
 
         new Thread(new  Runnable() {
 
