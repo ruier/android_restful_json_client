@@ -29,6 +29,24 @@ public class JsonServerApp extends AppCompatActivity {
     private Button b_recv;
     volatile Socket mSocket;
     ServerSocket server;
+
+    String modid;
+    String name;
+    String status;
+    String remark;
+
+    Handler uiHandler = new Handler(){
+        public void handleMessage(android.os.Message msg) {
+            if(msg.what==0x123)
+            {
+                et_modid.setText(modid);
+                et_name.setText(name);
+                et_status.setText(status);
+                et_remark.setText(remark);
+            }
+        };
+    };
+
     private Handler mHandler=new Handler(){
 
 
@@ -56,15 +74,15 @@ public class JsonServerApp extends AppCompatActivity {
                             //第一步，生成Json字符串格式的JSON对象
                             JSONObject jsonObject=new JSONObject(os.toString());
                             //第二步，从JSON对象中取值如果JSON 对象较多，可以用json数组
-                            String modid="modid："+jsonObject.getString("modid");
-                            String name="name："+jsonObject.getString("name");
-                            String status="status："+jsonObject.getString("status");
-                            String remark="remark："+jsonObject.getString("remark");
-
+                            modid=jsonObject.getString("modid");
+                            name=jsonObject.getString("name");
+                            status=jsonObject.getString("status");
+                            remark=jsonObject.getString("remark");
+                            uiHandler.sendEmptyMessage(0x123);
                             Looper.prepare();
                             Message message=Message.obtain();
-                            message.what=0X01;
-                            message.obj= modid + name + status + remark;
+                            message.what=0X1;
+                            message.obj= jsonObject.toString();
                             mHandler.sendMessage(message);
                             Looper.loop();
 
@@ -105,6 +123,7 @@ public class JsonServerApp extends AppCompatActivity {
         et_name=(EditText) findViewById(R.id.EName);
         et_status=(EditText) findViewById(R.id.EStatus);
         et_remark=(EditText) findViewById(R.id.EReMark);
+
 
     }
 
