@@ -38,7 +38,6 @@ public class JsonServerApp extends AppCompatActivity {
             super.handleMessage(msg);
             if(msg.what==0x01){
                 Toast.makeText(JsonServerApp.this,(String) msg.obj, 500).show();
-                b_recv.setEnabled(true);
             }
             if(msg.what==0x02){
                 new Thread(new  Runnable() {
