@@ -1,5 +1,8 @@
 package com.kemov.xdong.jsonclientapplication;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,6 +21,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class MainActivity extends AppCompatActivity {
     private EditText et_modid;
     private EditText et_name;
@@ -25,6 +34,50 @@ public class MainActivity extends AppCompatActivity {
     private EditText et_remark;
     private EditText et_addr;
     private String host="127.0.0.1";//同一个局域网内作为服务端的手机的IP，使用端口8155
+
+    String modid;
+    String name;
+    String status;
+    String remark;
+
+    Handler uiHandler = new Handler(){
+        public void handleMessage(android.os.Message msg) {
+            if(msg.what==0x123)
+            {
+                et_modid.setText(modid);
+                et_name.setText(name);
+                et_status.setText(status);
+                et_remark.setText(remark);
+            }
+        };
+    };
+
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
+
+    OkHttpClient client = new OkHttpClient();
+
+    String post(String url, String json) throws IOException {
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
+        }
+    }
+
+    String run(String url) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,46 +89,43 @@ public class MainActivity extends AppCompatActivity {
         et_addr = (EditText) findViewById(R.id.et_addr);
 
         Button b_send = (Button) findViewById(R.id.button_send);
-
+        Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                Bundle data = msg.getData();
+                String val = data.getString("value");
+                Log.i("mylog", "请求结果为-->" + val);
+                // TODO
+                // UI界面的更新等相关操作
+            }
+        };
     };
 
-    public void submit(View v) throws JSONException {
-        if( TextUtils.isEmpty(et_modid.getText().toString().trim())||
-        TextUtils.isEmpty( et_name.getText().toString().trim())||
-        TextUtils.isEmpty(et_status.getText().toString().trim())||
-                TextUtils.isEmpty(et_remark.getText().toString().trim())) {
-            Toast.makeText(MainActivity.this, "信息不能为空!!!", 0).show();
-            return;
-        }
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("modid", et_modid.getText().toString().trim());
-        jsonObject.put("name", et_name.getText().toString().trim());
-        jsonObject.put("status", et_status.getText().toString().trim());
-        jsonObject.put("remark", et_remark.getText().toString().trim());
-        final String  result=jsonObject.toString();
-        Log.i("jSON字符串", result);
-        new Thread(new  Runnable() {
-            @Override
-            public void run() {
+    public void submit(View v) throws JSONException  {
 
+        new Thread()  {
+            @Override
+            public void run()
+            {
                 try {
-                    host = et_addr.getText().toString();
-                    Log.i("kemov", "kemovlog host="+host);
-                    Socket socket=new Socket(InetAddress.getByName(host), 8155);
-                    OutputStream os=socket.getOutputStream();
-                    os.write(result.getBytes());
-                    os.flush();
-                    //防止服务端read方法读阻塞
-                    socket.shutdownOutput();
-                } catch (UnknownHostException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    String response = MainActivity.this.run("http://10.56.56.236:65500/todo/api/v1.0/tasks/3");
+                    Log.i("kemov", "respond" + response);
+                    JSONObject jsonObject=new JSONObject(response);
+
+                    modid=jsonObject.getString("modid");
+                    name=jsonObject.getString("name");
+                    status=jsonObject.getString("status");
+                    remark=jsonObject.getString("remark");
+                    Log.i("kemov", "we get " + modid + name + status + remark);
+                    uiHandler.sendEmptyMessage(0x123);
+
+                }catch (Exception e) {
                 }
 
             }
-        }).start();
+        }.start();
+
+
     }
 }
