@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
 
                         } catch (Exception e) {
                             Log.i("kemov", e.toString());
+                            Looper.prepare();
+                            Toast.makeText(MainActivity.this, "网络连接失败", 0).show();
+                            Looper.loop();
                         }
                     }
                 }.start();
@@ -104,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
 
                         } catch (Exception e) {
                             Log.i("kemov", e.toString());
+                            Looper.prepare();
+                            Toast.makeText(MainActivity.this, "网络连接失败", 0).show();
+                            Looper.loop();
                         }
                     }
                 }.start();
