@@ -54,6 +54,27 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(android.os.Message msg) {
 
             Log.i("kemov", "msg" + msg.what);
+
+            if(msg.what == 0x3) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            String response = MainActivity.this.get("http://10.56.56.236:65500/appname/module/rest/task");
+                            JSONObject jsonObject = new JSONObject(response);
+                            Message message = Message.obtain();
+                            message.what = 0X123;
+                            message.obj = jsonObject.get("modid").toString() + " " + jsonObject.getString("name".toString())
+                                            + " " + jsonObject.getString("status") + " " + jsonObject.getString("remark");
+                            uiHandler.sendMessage(message);
+
+                        } catch (Exception e) {
+                            Log.i("kemov", e.toString());
+                        }
+                    }
+                }.start();
+            }
+
             if (msg.what == 0x2) {
                 final String[] msg_net = ((String) msg.obj).split(" ");
                 net_user = msg_net[0];
@@ -97,10 +118,12 @@ public class MainActivity extends AppCompatActivity {
             Log.i("kemov", "msg" + msg.toString());
             if(msg.what==0x123)
             {
-                et_modid.setText(modid);
-                et_name.setText(name);
-                et_status.setText(status);
-                et_remark.setText(remark);
+                final String[] msg_str = ((String) msg.obj).split(" ");
+
+                et_modid.setText(msg_str[0]);
+                et_name.setText(msg_str[1]);
+                et_status.setText(msg_str[2]);
+                et_remark.setText(msg_str[3]);
 
             }
         };
@@ -184,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Toast.makeText(MainActivity.this, "目前不支持",0).show();
+                        mDialog.dismiss();
                     }
                 });
             }
@@ -194,10 +218,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void submit(View v) throws JSONException  {
         Log.i("kemov", "click");
-
-        netHandler.sendEmptyMessage(0x1);
-    uiHandler.sendEmptyMessage(0x123);
-
-
+        netHandler.sendEmptyMessage(0x3);
     }
 }
