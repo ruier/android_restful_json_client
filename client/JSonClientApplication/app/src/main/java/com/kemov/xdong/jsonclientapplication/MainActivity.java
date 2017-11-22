@@ -12,8 +12,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -39,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
     String local_pwd = "";
 
     private AlertDialog mDialog;
+    private ListView taskList;
+    private ArrayAdapter<String> mtaskListAdapter;
+
     Handler netHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
 
@@ -56,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                             message.obj = jsonObject.get("modid").toString() + " " + jsonObject.getString("name".toString())
                                             + " " + jsonObject.getString("status") + " " + jsonObject.getString("remark");
                             uiHandler.sendMessage(message);
+                            response = MainActivity.this.post("http://10.56.56.236:65500/appname/module/rest/task", "test string");
 
                         } catch (Exception e) {
                             Log.i("kemov", e.toString());
@@ -120,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
                 et_status.setText(msg_str[2]);
                 et_remark.setText(msg_str[3]);
 
+                mtaskListAdapter.add(msg_str[0]);
+
             }
         };
     };
@@ -161,7 +170,9 @@ public class MainActivity extends AppCompatActivity {
         et_remark=(EditText) findViewById(R.id.EReMark);
 
         Button b_send = (Button) findViewById(R.id.button_send);
-
+        taskList = (ListView) findViewById(R.id.tasklist);
+        mtaskListAdapter = new ArrayAdapter<String>(this, R.layout.task_list);
+        taskList.setAdapter(mtaskListAdapter);
         mDialog = new AlertDialog.Builder(this)
                 .setTitle("用户管理")
                 .setPositiveButton("登陆", null)
@@ -214,4 +225,11 @@ public class MainActivity extends AppCompatActivity {
         Log.i("kemov", "click");
         netHandler.sendEmptyMessage(0x3);
     }
+
+    private AdapterView.OnItemClickListener mDeviceClickListener
+            = new AdapterView.OnItemClickListener() {
+        public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
+
+        }
+    };
 }
