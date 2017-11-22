@@ -19,12 +19,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.EOFException;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -37,18 +32,12 @@ public class MainActivity extends AppCompatActivity {
     private EditText et_name;
     private EditText et_status;
     private EditText et_remark;
-    private EditText et_addr;
-    private String host="127.0.0.1";//同一个局域网内作为服务端的手机的IP，使用端口8155
+
     String net_user = "";
     String net_pwd = "";
     String local_user = "";
     String local_pwd = "";
-    String modid;
-    String name;
-    String status;
-    String remark;
-    private String m_user;
-    private String m_pwd;
+
     private AlertDialog mDialog;
     Handler netHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -170,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         et_name=(EditText) findViewById(R.id.EName);
         et_status=(EditText) findViewById(R.id.EStatus);
         et_remark=(EditText) findViewById(R.id.EReMark);
-        et_addr = (EditText) findViewById(R.id.et_addr);
 
         Button b_send = (Button) findViewById(R.id.button_send);
 

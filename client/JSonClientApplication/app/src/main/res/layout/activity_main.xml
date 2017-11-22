@@ -95,27 +95,14 @@
 
     <Button
         android:onClick="submit"
-        android:text="发送"
+        android:text="接收"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="123dp"
+        android:layout_marginTop="21dp"
         android:id="@+id/button_send"
-        android:layout_below="@+id/ReMark"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:layout_marginRight="13dp"
-        android:layout_marginEnd="13dp" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="text"
-        android:text="Name"
-        android:ems="10"
-        android:id="@+id/et_addr"
-        android:layout_alignTop="@+id/button_send"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/ReMark"
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>
