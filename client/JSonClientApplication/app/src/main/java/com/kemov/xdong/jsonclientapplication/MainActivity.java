@@ -50,12 +50,34 @@ public class MainActivity extends AppCompatActivity {
 
             Log.i("kemov", "msg" + msg.what);
 
-            if(msg.what == 0x3) {
+            if(msg.what == 0x4) {
                 new Thread() {
                     @Override
                     public void run() {
                         try {
                             String response = MainActivity.this.get("http://10.56.56.236:65500/appname/module/rest/task");
+                            JSONObject jsonObject = new JSONObject(response);
+                            Message message = Message.obtain();
+                            message.what = 0X124;
+                            message.obj = jsonObject.get("tasks").toString() + " ";
+                            Log.i("kemov", "msg" + message.obj );
+                            uiHandler.sendMessage(message);
+
+                        } catch (Exception e) {
+                            Log.i("kemov", e.toString());
+                            Looper.prepare();
+                            Toast.makeText(MainActivity.this, "网络连接失败", 0).show();
+                            Looper.loop();
+                        }
+                    }
+                }.start();
+            }
+            if(msg.what == 0x3) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            String response = MainActivity.this.get("http://10.56.56.236:65500/appname/module/rest/task/1");
                             JSONObject jsonObject = new JSONObject(response);
                             Message message = Message.obtain();
                             message.what = 0X123;
@@ -127,8 +149,13 @@ public class MainActivity extends AppCompatActivity {
                 et_status.setText(msg_str[2]);
                 et_remark.setText(msg_str[3]);
 
-                mtaskListAdapter.add(msg_str[0]);
+            }
 
+            if (msg.what == 0x124)
+            {
+                final String[] msg_str = ((String) msg.obj).split(" ");
+                mtaskListAdapter.clear();
+                mtaskListAdapter.add(msg_str[0]);
             }
         };
     };
@@ -173,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
         taskList = (ListView) findViewById(R.id.tasklist);
         mtaskListAdapter = new ArrayAdapter<String>(this, R.layout.task_list);
         taskList.setAdapter(mtaskListAdapter);
+        taskList.setOnItemClickListener(mtaskClickListener);
         mDialog = new AlertDialog.Builder(this)
                 .setTitle("用户管理")
                 .setPositiveButton("登陆", null)
@@ -223,12 +251,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void submit(View v) throws JSONException  {
         Log.i("kemov", "click");
-        netHandler.sendEmptyMessage(0x3);
+        netHandler.sendEmptyMessage(0x4);
     }
 
-    private AdapterView.OnItemClickListener mDeviceClickListener
+    private AdapterView.OnItemClickListener mtaskClickListener
             = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
+            netHandler.sendEmptyMessage(0x3);
 
         }
     };
