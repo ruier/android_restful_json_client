@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> mtaskListAdapter;
 
     Handler netHandler = new Handler() {
-        public void handleMessage(android.os.Message msg) {
+        public void handleMessage(final android.os.Message msg) {
 
             Log.i("kemov", "msg" + msg.what);
 
@@ -59,8 +60,12 @@ public class MainActivity extends AppCompatActivity {
                             JSONObject jsonObject = new JSONObject(response);
                             Message message = Message.obtain();
                             message.what = 0X124;
-                            message.obj = jsonObject.get("tasks").toString() + " ";
-                            Log.i("kemov", "msg" + message.obj );
+                            JSONArray tasks=jsonObject.getJSONArray("tasks");
+                            message.obj = "";
+                            for (int i = 0; i < tasks.length(); i++) {
+                                message.obj += tasks.getString(i) + ",";
+                            }
+                            Log.i("kemov", "msg 04" +  message.obj );
                             uiHandler.sendMessage(message);
 
                         } catch (Exception e) {
@@ -77,14 +82,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            String response = MainActivity.this.get("http://10.56.56.236:65500/appname/module/rest/task/1");
+
+                            String response = MainActivity.this.get("http://10.56.56.236:65500/appname/module/rest/task/" + 1);
+
                             JSONObject jsonObject = new JSONObject(response);
                             Message message = Message.obtain();
                             message.what = 0X123;
                             message.obj = jsonObject.get("modid").toString() + " " + jsonObject.getString("name".toString())
                                             + " " + jsonObject.getString("status") + " " + jsonObject.getString("remark");
                             uiHandler.sendMessage(message);
-                            response = MainActivity.this.post("http://10.56.56.236:65500/appname/module/rest/task", "test string");
 
                         } catch (Exception e) {
                             Log.i("kemov", e.toString());
@@ -153,9 +159,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (msg.what == 0x124)
             {
-                final String[] msg_str = ((String) msg.obj).split(" ");
+                final String[] msg_str = ((String) msg.obj).split(",");
                 mtaskListAdapter.clear();
-                mtaskListAdapter.add(msg_str[0]);
+                for (String title : msg_str)
+                mtaskListAdapter.add(title);
             }
         };
     };
@@ -257,8 +264,11 @@ public class MainActivity extends AppCompatActivity {
     private AdapterView.OnItemClickListener mtaskClickListener
             = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
-            netHandler.sendEmptyMessage(0x3);
-
+            Message message = Message.obtain();
+            message.what = 0X3;
+            message.obj = arg2 + 1;
+            netHandler.sendMessage(message);
+            Log.i("kemov", "click " + arg2 );
         }
     };
 }
