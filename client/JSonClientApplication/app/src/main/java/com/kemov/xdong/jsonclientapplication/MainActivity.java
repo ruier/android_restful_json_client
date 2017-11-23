@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     String local_user = "";
     String local_pwd = "";
 
+    String server_url = "";
     private AlertDialog mDialog;
     private ListView taskList;
     private ArrayAdapter<String> mtaskListAdapter;
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            String response = MainActivity.this.post("http://10.56.56.236:65500/appname/module/rest/task",text);
+                            String response = MainActivity.this.post(server_url + "/appname/module/rest/task",text);
 
                         } catch (Exception e) {
                             Log.i("kemov", e.toString());
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            String response = MainActivity.this.get("http://10.56.56.236:65500/appname/module/rest/task");
+                            String response = MainActivity.this.get(server_url + "/appname/module/rest/task");
                             JSONObject jsonObject = new JSONObject(response);
                             Message message = Message.obtain();
                             message.what = 0X124;
@@ -97,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             Log.i("kemov", "msg arg1:" + msg.arg1);
-                            String response = MainActivity.this.get("http://10.56.56.236:65500/appname/module/rest/task/" + taskid);
+                            String response = MainActivity.this.get(server_url + "/appname/module/rest/task/" + taskid);
 
                             JSONObject jsonObject = new JSONObject(response);
                             Message message = Message.obtain();
@@ -136,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            String response = MainActivity.this.get(" http://10.56.56.236:65500/appname/module/rest/user");
+                            String response = MainActivity.this.get(server_url + "/appname/module/rest/user");
                             JSONObject jsonObject = new JSONObject(response);
                             Message message = Message.obtain();
                             message.what = 0X2;
@@ -333,4 +336,30 @@ public class MainActivity extends AppCompatActivity {
             send.setText("新建任务");
         }
     };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(1,1,0,"本地服务器");
+        menu.add(1,2,0,"远程服务器");
+
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        switch (id) {
+            case 1:
+                server_url = "http://10.56.56.236:65500";
+                Toast.makeText(MainActivity.this, "使用本地服务器",0).show();
+                break;
+            case 2:
+                server_url = "http://61.183.69.226:65500";
+                Toast.makeText(MainActivity.this, "使用远程服务器",0).show();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
