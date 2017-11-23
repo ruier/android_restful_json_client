@@ -323,6 +323,11 @@ public class MainActivity extends AppCompatActivity {
     public void new_task (View v) throws JSONException  {
         Log.i("kemov", "click");
         Button send = (Button) findViewById(R.id.button_send);
+        Message msg = Message.obtain();
+
+        JSONObject jsonObject = new JSONObject();
+
+
 
         if (!et_modid.isEnabled())
         {
@@ -331,21 +336,20 @@ public class MainActivity extends AppCompatActivity {
             et_status.setEnabled(true);
             et_remark.setEnabled(true);
             send.setText("提交任务");
+        } else
+        {
+            jsonObject.put("modid", et_modid.getText().toString());
+            jsonObject.put("name", et_name.getText().toString());
+            jsonObject.put("status", et_status.getText().toString());
+            jsonObject.put("remark", et_remark.getText().toString());
+
+            if(jsonObject.length() < 4)
+                return;
+            msg.what = 0x05;
+            msg.obj = jsonObject.toString();
+            netHandler.sendMessage(msg);
         }
-        Message msg = Message.obtain();
 
-        JSONObject jsonObject = new JSONObject();
-
-        jsonObject.put("modid", et_modid.getText().toString());
-        jsonObject.put("name", et_name.getText().toString());
-        jsonObject.put("status", et_status.getText().toString());
-        jsonObject.put("remark", et_remark.getText().toString());
-
-        if(jsonObject.length() < 4)
-            return;
-        msg.what = 0x05;
-        msg.obj = jsonObject.toString();
-        netHandler.sendMessage(msg);
     }
 
     private AdapterView.OnItemClickListener mtaskClickListener
