@@ -48,6 +48,23 @@ public class MainActivity extends AppCompatActivity {
 
     Handler netHandler = new Handler() {
         public void handleMessage(final android.os.Message msg) {
+            if(msg.what == 0x5) {
+                final String text = (String) msg.obj;
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            String response = MainActivity.this.post("http://10.56.56.236:65500/appname/module/rest/task",text);
+
+                        } catch (Exception e) {
+                            Log.i("kemov", e.toString());
+                            Looper.prepare();
+                            Toast.makeText(MainActivity.this, "网络连接失败", 0).show();
+                            Looper.loop();
+                        }
+                    }
+                }.start();
+            }
             if(msg.what == 0x4) {
                 new Thread() {
                     @Override
@@ -253,9 +270,25 @@ public class MainActivity extends AppCompatActivity {
         mDialog.show();
     };
 
-    public void submit(View v) throws JSONException  {
+    public void get_tasklist (View v) throws JSONException  {
         Log.i("kemov", "click");
         netHandler.sendEmptyMessage(0x4);
+    }
+
+    public void new_task (View v) throws JSONException  {
+        Log.i("kemov", "click");
+        Message msg = Message.obtain();
+
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("modid", et_modid.getText().toString());
+        jsonObject.put("name", et_name.getText().toString());
+        jsonObject.put("status", et_status.getText().toString());
+        jsonObject.put("remark", et_remark.getText().toString());
+
+        msg.what = 0x05;
+        msg.obj = jsonObject.toString();
+        netHandler.sendMessage(msg);
     }
 
     private AdapterView.OnItemClickListener mtaskClickListener

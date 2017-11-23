@@ -93,17 +93,6 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
-    <Button
-        android:onClick="submit"
-        android:text="接收"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="21dp"
-        android:id="@+id/button_send"
-        android:layout_marginRight="13dp"
-        android:layout_below="@+id/ReMark"
-        android:layout_alignParentEnd="true" />
-
     <ListView
         android:id="@+id/tasklist"
         android:layout_width="match_parent"
@@ -119,6 +108,29 @@
         android:layout_above="@+id/tasklist"
         android:layout_toEndOf="@+id/ReMark"
         android:id="@+id/textView3" />
+
+    <Button
+        android:onClick="get_tasklist"
+        android:text="获取任务"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:id="@+id/button_get_tasklist"
+        android:layout_marginRight="13dp"
+        android:layout_below="@+id/ReMark"
+        android:layout_alignStart="@+id/EReMark" />
+
+    <Button
+        android:onClick="new_task"
+        android:text="新建任务"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_send"
+        android:layout_marginRight="13dp"
+        android:layout_alignBaseline="@+id/button_get_tasklist"
+        android:layout_alignBottom="@+id/button_get_tasklist"
+        android:layout_toEndOf="@+id/button_get_tasklist"
+        android:layout_marginStart="11dp" />
 
 
 </RelativeLayout>
