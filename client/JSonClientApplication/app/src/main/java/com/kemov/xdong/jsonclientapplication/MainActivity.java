@@ -164,6 +164,9 @@ public class MainActivity extends AppCompatActivity {
             {
                 final String[] msg_str = ((String) msg.obj).split(" ");
 
+                if(msg_str.length < 4)
+                    return;
+
                 et_modid.setText(msg_str[0]);
                 et_name.setText(msg_str[1]);
                 et_status.setText(msg_str[2]);
@@ -286,6 +289,8 @@ public class MainActivity extends AppCompatActivity {
         jsonObject.put("status", et_status.getText().toString());
         jsonObject.put("remark", et_remark.getText().toString());
 
+        if(jsonObject.length() < 4)
+            return;
         msg.what = 0x05;
         msg.obj = jsonObject.toString();
         netHandler.sendMessage(msg);
