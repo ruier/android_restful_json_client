@@ -48,9 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     Handler netHandler = new Handler() {
         public void handleMessage(final android.os.Message msg) {
-
-            Log.i("kemov", "msg" + msg.what);
-
             if(msg.what == 0x4) {
                 new Thread() {
                     @Override
@@ -65,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
                             for (int i = 0; i < tasks.length(); i++) {
                                 message.obj += tasks.getString(i) + ",";
                             }
-                            Log.i("kemov", "msg 04" +  message.obj );
                             uiHandler.sendMessage(message);
 
                         } catch (Exception e) {
@@ -78,12 +74,13 @@ public class MainActivity extends AppCompatActivity {
                 }.start();
             }
             if(msg.what == 0x3) {
+                final int taskid = msg.arg1;
                 new Thread() {
                     @Override
                     public void run() {
                         try {
-
-                            String response = MainActivity.this.get("http://10.56.56.236:65500/appname/module/rest/task/" + 1);
+                            Log.i("kemov", "msg arg1:" + msg.arg1);
+                            String response = MainActivity.this.get("http://10.56.56.236:65500/appname/module/rest/task/" + taskid);
 
                             JSONObject jsonObject = new JSONObject(response);
                             Message message = Message.obtain();
@@ -264,11 +261,10 @@ public class MainActivity extends AppCompatActivity {
     private AdapterView.OnItemClickListener mtaskClickListener
             = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
-            Message message = Message.obtain();
-            message.what = 0X3;
-            message.obj = arg2 + 1;
+            Message message = netHandler.obtainMessage();
+            message.what = 0x3;
+            message.arg1 = (arg2 + 1);
             netHandler.sendMessage(message);
-            Log.i("kemov", "click " + arg2 );
         }
     };
 }
