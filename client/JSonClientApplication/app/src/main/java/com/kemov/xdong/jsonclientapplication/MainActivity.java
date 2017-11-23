@@ -2,6 +2,8 @@ package com.kemov.xdong.jsonclientapplication;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -237,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("用户管理")
                 .setPositiveButton("登陆", null)
                 .setNegativeButton("注册", null)
+                .setNeutralButton("服务器", null)
                 .setCancelable(false)
                 .create();
 
@@ -249,7 +252,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onShow(DialogInterface dialog) {
                 Button positionButton=mDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                Button negativeButton=mDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                final Button negativeButton=mDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                final Button neutralButton=mDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
                 positionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -273,6 +277,30 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Toast.makeText(MainActivity.this, "目前不支持",0).show();
                         mDialog.dismiss();
+                    }
+                });
+
+                neutralButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
+                        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+                        if (networkInfo == null || !networkInfo.isAvailable()) {
+                            Toast.makeText(MainActivity.this, "无网络连接，退出",0).show();
+                            finish();
+                        }
+                        else
+                        {
+                            String type = networkInfo.getTypeName();
+                            if (type.equalsIgnoreCase("WIFI")) {
+                                server_url = "http://10.56.56.236:65500";
+                                neutralButton.setText("本地");
+                            } else if (type.equalsIgnoreCase("MOBILE")) {
+                                server_url = "http://61.183.69.226:65500";
+                                neutralButton.setText("远程");
+                            }}
                     }
                 });
             }
