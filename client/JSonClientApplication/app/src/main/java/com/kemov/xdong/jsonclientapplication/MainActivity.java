@@ -220,6 +220,11 @@ public class MainActivity extends AppCompatActivity {
         et_status=(EditText) findViewById(R.id.EStatus);
         et_remark=(EditText) findViewById(R.id.EReMark);
 
+        et_modid.setEnabled(false);
+        et_name.setEnabled(false);
+        et_status.setEnabled(false);
+        et_remark.setEnabled(false);
+
         Button b_send = (Button) findViewById(R.id.button_send);
         taskList = (ListView) findViewById(R.id.tasklist);
         mtaskListAdapter = new ArrayAdapter<String>(this, R.layout.task_list);
@@ -275,11 +280,27 @@ public class MainActivity extends AppCompatActivity {
 
     public void get_tasklist (View v) throws JSONException  {
         Log.i("kemov", "click");
+        Button send = (Button) findViewById(R.id.button_send);
         netHandler.sendEmptyMessage(0x4);
+        et_modid.setEnabled(false);
+        et_name.setEnabled(false);
+        et_status.setEnabled(false);
+        et_remark.setEnabled(false);
+        send.setText("新建任务");
     }
 
     public void new_task (View v) throws JSONException  {
         Log.i("kemov", "click");
+        Button send = (Button) findViewById(R.id.button_send);
+
+        if (!et_modid.isEnabled())
+        {
+            et_modid.setEnabled(true);
+            et_name.setEnabled(true);
+            et_status.setEnabled(true);
+            et_remark.setEnabled(true);
+            send.setText("提交任务");
+        }
         Message msg = Message.obtain();
 
         JSONObject jsonObject = new JSONObject();
@@ -299,10 +320,17 @@ public class MainActivity extends AppCompatActivity {
     private AdapterView.OnItemClickListener mtaskClickListener
             = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
+            Button send = (Button) findViewById(R.id.button_send);
+
             Message message = netHandler.obtainMessage();
             message.what = 0x3;
             message.arg1 = (arg2 + 1);
             netHandler.sendMessage(message);
+            et_modid.setEnabled(false);
+            et_name.setEnabled(false);
+            et_status.setEnabled(false);
+            et_remark.setEnabled(false);
+            send.setText("新建任务");
         }
     };
 }
